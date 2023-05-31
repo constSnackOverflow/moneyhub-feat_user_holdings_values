@@ -6,6 +6,21 @@ const {get, listen, use} = express()
 
 use(bodyParser.json({limit: "10mb"}))
 
+/* TODO
+    - 1) Admin: Generate a CSV formatted report showing values of all user holdings
+                - CSV to contain row for each holding matching following headers:
+                    - User
+                    - First Name
+                    - Last Name
+                    - Date
+                    - Holding
+                        - Name of holding account given by financial-companies service
+                    - Value
+                        - Calculated using investmentTotal * investmentPercentage
+    - 2) Investments: Expects ^ CSV report to be sent as json to /exports
+
+*/
+
 // Endpoint to fetch all investments for a given user
 get("/investments/:id", async ({params: {id}}, res) => {
   try {
