@@ -66,7 +66,7 @@ app.post("/exports", async (req, res) => {
   try {
     const allUserHoldings = await fetchAllUserHoldings()
     console.log("Posted holding values for all users to investments service")
-    res.status(200).send(allUserHoldings)
+    res.header("Content-Type", "application/json").status(200).send(allUserHoldings)
   } catch (error) {
     console.error(error)
     res.send(500)
