@@ -2,11 +2,11 @@ const {fetchAllUserHoldings} = require("./utils/fetchAllUserHoldings")
 const express = require("express")
 const bodyParser = require("body-parser")
 const {financialsServiceUrl, investmentsServiceUrl, port} = require("config")
-const {get: fetch} = require("axios")
-const {get, listen, use, post} = express()
+const {get} = require("axios")
+const app = express()
 const {writeFile} = require("fs")
 
-use(bodyParser.json({limit: "10mb"}))
+app.use(bodyParser.json({limit: "10mb"}))
 
 /* TODO
     - 1) Admin: Generate a CSV formatted report showing values of all user holdings
@@ -23,8 +23,8 @@ use(bodyParser.json({limit: "10mb"}))
 
 */
 
-// Endpoint for administrator to get CSV report of all user holdings
-get("/all-user-holdings", async (res) => {
+// Endpoint for administrator to app.get CSV report of all user holdings
+app.get("/all-user-holdings", async (req, res) => {
   try {
     const allUserHoldings = await fetchAllUserHoldings()
 
@@ -53,8 +53,7 @@ get("/all-user-holdings", async (res) => {
 
     res
       .status(200)
-      .send(allUserHoldingsCsv,
-      )
+      .send(allUserHoldingsCsv)
   } catch (error) {
     console.error(error)
     res.send(500)
@@ -63,7 +62,7 @@ get("/all-user-holdings", async (res) => {
 
 
 // Endpoint for CSV report to be sent as JSON to investments service on /exports
-post("/exports", async (req, res) => {
+app.post("/exports", async (req, res) => {
   try {
     const allUserHoldings = await fetchAllUserHoldings()
     console.log("Posted holding values for all users to investments service")
@@ -77,9 +76,9 @@ post("/exports", async (req, res) => {
 // -------------------- START ADDITIONAL ENDPOINTS ----------------------------------------
 
 // Endpoint to fetch all investments for a given user
-get("/investments/:id", async ({params: {id}}, res) => {
+app.get("/investments/:id", async ({params: {id}}, res) => {
   try {
-    const {data: investmentsById} = await fetch(
+    const {data: investmentsById} = await get(
       `${investmentsServiceUrl}/investments/${id}`,
     )
     res.status(200).send(investmentsById)
@@ -90,9 +89,9 @@ get("/investments/:id", async ({params: {id}}, res) => {
 })
 
 // Endpoint to fetch all financial companies
-get("/financial-companies", async (req, res) => {
+app.get("/financial-companies", async (req, res) => {
   try {
-    const {data: financialCompanies} = await fetch(`${financialsServiceUrl}/companies`)
+    const {data: financialCompanies} = await get(`${financialsServiceUrl}/companies`)
     res.status(200).send(financialCompanies)
   } catch (error) {
     console.error(error)
@@ -102,7 +101,7 @@ get("/financial-companies", async (req, res) => {
 
 // -------------------- END ADDITIONAL ENDPOINTS ----------------------------------------
 
-listen(port, (err) => {
+app.listen(port, (err) => {
   if (err) {
     console.error("Error occurred starting the server", err)
     process.exit(1)
