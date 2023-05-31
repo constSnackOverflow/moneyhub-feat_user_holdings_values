@@ -14,5 +14,23 @@ describe("GET", () => {
         throw err
       }
     })
+    it("should have the text property in the response body", async () => {
+      try {
+        const response = await endpoint
+        expect(response).to.have.property("text")
+      } catch (err) {
+        console.log(err)
+        throw err
+      }
+    })
+    it("should have substring of column values present in response.text", async () => {
+      try {
+        const {text} = await endpoint
+        expect(text).to.include("Last Name,Date,Holding,Value")
+      } catch (err) {
+        console.log(err)
+        throw err
+      }
+    })
   })
 })
