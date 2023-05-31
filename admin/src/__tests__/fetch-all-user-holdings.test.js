@@ -34,3 +34,27 @@ describe("GET", () => {
     })
   })
 })
+
+describe("POST", () => {
+  const endpoint = request(app).post("/exports")
+  describe("POST /exports", () => {
+    it("should return a 200 status code", async () => {
+      try {
+        const response = await endpoint
+        expect(response.status).to.equal(200)
+      } catch (err) {
+        console.log(err)
+        throw err
+      }
+    })
+    it("should have an array of objects in the response body", async () => {
+      try {
+        const response = await endpoint
+        expect(response._body).to.be.an("array")
+      } catch (err) {
+        console.log(err)
+        throw err
+      }
+    })
+  })
+})
