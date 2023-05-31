@@ -1,5 +1,5 @@
-const {request} = require("supertest")
-const app = require("../index")
+const app = require("../index.js")
+const request = require("supertest")
 const {expect} = require("chai")
 
 describe("GET", () => {
@@ -25,7 +25,7 @@ describe("GET", () => {
     })
     it("should have substring of column values present in response.text", async () => {
       try {
-        const {text} = await endpoint
+        const {response: {text}} = endpoint
         expect(text).to.include("Last Name,Date,Holding,Value")
       } catch (err) {
         console.log(err)
