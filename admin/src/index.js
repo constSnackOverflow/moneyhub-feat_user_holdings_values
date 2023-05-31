@@ -26,6 +26,7 @@ get("/all-user-holdings", async (req, res) => {
   try {
     // Requires function to retrieve and transform user holdings into required format
     const {data: investments} = await fetch(`${investmentsServiceUrl}/investments`)
+    const {data: financialCompanies} = await fetch(`${financialsServiceUrl}/companies`)
 
     /* TODO:
         - Map over investments and return an array of objects with specified properties
@@ -40,8 +41,10 @@ get("/all-user-holdings", async (req, res) => {
         lastName,
         investmentTotal,
         date,
+        holdings: [{id: holdingId, investmentPercentage}],
       }) => {
-        const value = investmentTotal
+        const {name: holding} = financialCompanies.find(({id: financialCompanyId}) => financialCompanyId === holdingId)
+        const value = investmentTotal * investmentPercentage
 
         return {
           user,
@@ -49,6 +52,7 @@ get("/all-user-holdings", async (req, res) => {
           lastName,
           date,
           value,
+          holding,
         }
       })
 
