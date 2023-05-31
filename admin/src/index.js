@@ -25,6 +25,32 @@ use(bodyParser.json({limit: "10mb"}))
 get("/all-user-holdings", async (req, res) => {
   try {
     // Requires function to retrieve and transform user holdings into required format
+    const {data: investments} = await fetch(`${investmentsServiceUrl}/investments`)
+
+    /* TODO:
+        - Map over investments and return an array of objects with specified properties
+        - Calculate value using product of investmentTotal and investmentPercentage
+        - Retrieve holding name from financial-companies using holdingId
+     */
+
+    return investments
+      .map(({
+        userId: user,
+        firstName,
+        lastName,
+        investmentTotal,
+        date,
+      }) => {
+        const value = investmentTotal
+
+        return {
+          user,
+          firstName,
+          lastName,
+          date,
+          value,
+        }
+      })
 
   } catch (error) {
     console.error(error)
