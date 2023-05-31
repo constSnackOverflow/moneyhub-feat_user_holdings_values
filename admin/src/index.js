@@ -4,6 +4,7 @@ const bodyParser = require("body-parser")
 const {financialsServiceUrl, investmentsServiceUrl, port} = require("config")
 const {get: fetch} = require("axios")
 const {get, listen, use} = express()
+const {writeFile} = require("fs")
 
 use(bodyParser.json({limit: "10mb"}))
 
@@ -23,10 +24,37 @@ use(bodyParser.json({limit: "10mb"}))
 */
 
 // Endpoint for administrator to get CSV report of all user holdings
-get("/all-user-holdings", async (req, res) => {
+get("/all-user-holdings", async (res) => {
   try {
     const allUserHoldings = await fetchAllUserHoldings()
 
+    /* Initial attempt to initialise header row: Use Object.entries to map over allUserHoldings and return an array of objects with first character capitalised
+
+        allUserHoldings
+        .map(investment => Object.entries(investment)
+        .map(([key, value]) => [key.charAt(0).toUpperCase() + key.slice(1), value])
+        .reduce((acc, [key, value]) => ({...acc, [key]: value}), {}))
+        */
+
+    const allUserHoldingsCsv = [
+      ["User", "First Name", "Last Name", "Date", "Holding", "Value"],
+      ...allUserHoldings.map((investment) => [
+        Object.values(investment),
+      ]),
+    ]
+      .map(row => row.join(","))
+      .join("\n")
+
+    // write allUserHoldingsCsv to fetchAllUserHoldings CSV file
+
+    writeFile("fetchAllUserHoldings.csv", allUserHoldingsCsv, () => {
+      console.log("Fetched holding values for all users and wrote to fetchAllUserHoldings.csv")
+    })
+
+    res
+      .status(200)
+      .send(allUserHoldingsCsv,
+      )
   } catch (error) {
     console.error(error)
     res.send(500)
