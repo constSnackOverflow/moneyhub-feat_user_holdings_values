@@ -21,6 +21,20 @@ use(bodyParser.json({limit: "10mb"}))
 
 */
 
+// Endpoint for administrator to get CSV report of all user holdings
+get("/all-user-holdings", async (req, res) => {
+  try {
+    // Requires function to retrieve and transform user holdings into required format
+
+  } catch (error) {
+    console.error(error)
+    res.send(500)
+  }
+})
+
+
+// -------------------- START ADDITIONAL ENDPOINTS ----------------------------------------
+
 // Endpoint to fetch all investments for a given user
 get("/investments/:id", async ({params: {id}}, res) => {
   try {
@@ -44,6 +58,8 @@ get("/financial-companies", async (req, res) => {
     res.send(500)
   }
 })
+
+// -------------------- END ADDITIONAL ENDPOINTS ----------------------------------------
 
 listen(port, (err) => {
   if (err) {
