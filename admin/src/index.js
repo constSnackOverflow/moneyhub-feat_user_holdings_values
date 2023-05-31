@@ -3,7 +3,7 @@ const express = require("express")
 const bodyParser = require("body-parser")
 const {financialsServiceUrl, investmentsServiceUrl, port} = require("config")
 const {get: fetch} = require("axios")
-const {get, listen, use} = express()
+const {get, listen, use, post} = express()
 const {writeFile} = require("fs")
 
 use(bodyParser.json({limit: "10mb"}))
@@ -61,6 +61,18 @@ get("/all-user-holdings", async (res) => {
   }
 })
 
+
+// Endpoint for CSV report to be sent as JSON to investments service on /exports
+post("/exports", async (req, res) => {
+  try {
+    const allUserHoldings = await fetchAllUserHoldings()
+    console.log("Posted holding values for all users to investments service")
+    res.status(200).send(allUserHoldings)
+  } catch (error) {
+    console.error(error)
+    res.send(500)
+  }
+})
 
 // -------------------- START ADDITIONAL ENDPOINTS ----------------------------------------
 
