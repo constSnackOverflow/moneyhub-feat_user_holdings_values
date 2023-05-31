@@ -1,28 +1,27 @@
 const express = require("express")
 const bodyParser = require("body-parser")
-const config = require("config")
-const request = require("request")
+const {investmentsServiceUrl, port} = require("config")
+const {get: fetch} = require("axios")
+const {get, listen, use} = express()
 
-const app = express()
+use(bodyParser.json({limit: "10mb"}))
 
-app.use(bodyParser.json({limit: "10mb"}))
-
-app.get("/investments/:id", (req, res) => {
-  const {id} = req.params
-  request.get(`${config.investmentsServiceUrl}/investments/${id}`, (e, r, investments) => {
-    if (e) {
-      console.error(e)
-      res.send(500)
-    } else {
-      res.send(investments)
-    }
-  })
+get("/investments/:id", async ({params: {id}}, res) => {
+  try {
+    const {data: investmentsById} = await fetch(
+      `${investmentsServiceUrl}/investments/${id}`,
+    )
+    res.status(200).send(investmentsById)
+  } catch (error) {
+    console.error(error)
+    res.send(500)
+  }
 })
 
-app.listen(config.port, (err) => {
+listen(port, (err) => {
   if (err) {
     console.error("Error occurred starting the server", err)
     process.exit(1)
   }
-  console.log(`Server running on port ${config.port}`)
+  console.log(`Server running on port ${port}`)
 })
